@@ -1,0 +1,100 @@
+# Setting up a Jenkins CI/CD pipeline for a sampleproject
+
+STEP 1: Create a New Repo
+
+Go to GitHub
+
+Click New Repository
+
+Name it:
+
+jenkins-cicd-sample
+
+
+Check Add README
+
+Click Create Repository
+
+🔵 STEP 2: Upload Sample Project Files Manually
+
+Inside repo → Click Add file → Upload files
+
+Upload these two simple sample files:
+
+index.html
+
+
+With content:
+
+<h1>CI/CD Test</h1>
+
+
+And:
+
+build.sh
+
+
+With content:
+
+echo "Building project..."
+
+
+Click Commit changes.
+
+🔵 STEP 3: Create GitHub Action (CI/CD Pipeline)
+
+Go to Actions tab
+
+Click "Set up a workflow yourself"
+
+You will see:
+
+.github/workflows/main.yml
+
+
+Paste this simple CI/CD workflow:
+-----------------------------------------------------------------
+
+name: Sample CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Display files
+      run: ls -R
+
+    - name: Run build script
+      run: bash build.sh
+
+    - name: Print build success
+      run: echo "CI/CD pipeline completed!"
+
+--------------------------------------------------------------
+
+Click Start commit → Commit new file
+
+🔵 STEP 4: Check Pipeline Run
+
+Go to Actions tab
+
+You will see "Sample CI/CD" running
+
+Open it → View logs:
+
+Code checked out
+
+Files listed
+
+Build script executed
+
+Pipeline success message
