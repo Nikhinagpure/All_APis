@@ -1,0 +1,134 @@
+# Git workflow with branching, merging, and pull requests
+STEP 1: Create a New Repository on GitHub
+Go to https://github.com/
+Click New Repository
+Name it:
+git-workflow-demo
+Select → Public
+Check → Add README (ON)
+Click Create Repository
+TEP 2: Clone Repo on Your Local System
+Open Command Prompt / Terminal and run:
+----->  git clone https://github.com/<your-username>/git-workflow-demo.git
+Go inside the folder:
+
+----> cd git-workflow-demo
+
+🔵 STEP 3: Create a New Branch
+-----> git branch feature-1
+
+Switch to that branch:
+
+-----> git checkout feature-1
+
+
+🔵 STEP 4: Add a File in the Branch
+
+Create a file:
+
+-----> echo "This is feature 1" > feature1.txt
+
+Check status:
+
+----->  git status
+
+
+Add the file:
+
+----->  git add feature1.txt
+
+
+Commit the change:
+
+----->  git commit -m "Added feature1 file"
+
+🔵 STEP 5: Push Branch to GitHub
+-----> git push origin feature-1
+
+🔵 STEP 6: Create a Pull Request (PR) on GitHub
+
+Go to your repo
+
+-----> GitHub shows → “Compare & Pull Request”
+
+Click it
+
+Add title:
+
+----->  Added feature1
+
+
+Click → Create Pull Request
+
+Click → Merge Pull Request
+
+Click → Confirm Merge
+
+Your branch is now merged with main branch.
+
+🔵 STEP 7: Delete Branch (Optional)
+-----> git branch -d feature-1
+
+🔵 STEP 8: Update Local Main Branch
+
+Switch to main:
+
+-----> git checkout main
+
+
+Fetch latest changes:
+
+----->  git pull origin main
+
+🔵 STEP 9: Now Use AWS EC2 to Clone the Repo
+Login to your AWS EC2 instance (Ubuntu)
+
+On your computer:
+
+ssh -i yourkey.pem ubuntu@<EC2-Public-IP>
+
+Install Git (if not installed)
+sudo apt update
+sudo apt install git -y
+
+Clone the same repository inside EC2
+git clone https://github.com/<your-username>/git-workflow-demo.git
+
+
+Go inside:
+
+cd git-workflow-demo
+
+🔵 STEP 10: Create a Branch on EC2
+git checkout -b feature-ec2
+
+
+Add a new file:
+
+echo "EC2 version" > ec2.txt
+
+
+Add + commit:
+
+git add ec2.txt
+git commit -m "Added ec2 file"
+
+
+Push branch:
+
+git push origin feature-ec2
+
+🔵 STEP 11: Create Pull Request from EC2 Branch
+
+Open GitHub again
+
+You will see → “feature-ec2 has recent pushes”
+
+Click → Compare & Pull Request
+
+Add title
+
+EC2 changes
+
+
+Click → Merge Pull Request
