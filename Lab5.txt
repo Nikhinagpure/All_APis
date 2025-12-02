@@ -1,0 +1,153 @@
+Practical: Web Application Hosting with Docker Stack and Docker Compose (Voting App)
+
+STEP 2: Launch AWS EC2 Instance
+ Sg - all trafiic
+STEP 3: SSH into EC2
+
+Open terminal:
+
+ssh -i "yourkey.pem" ubuntu@<EC2-PUBLIC-IP>
+
+
+STEP 4: Update & Install Docker
+
+Run commands:
+
+---> sudo apt update -y
+---> sudo apt install docker.io docker-compose -y
+---> sudo systemctl start docker
+---> sudo systemctl enable docker
+---> sudo usermod -aG docker $USER
+---> newgrp docker
+
+
+Check installation:
+
+---> docker --version
+---> docker-compose --version
+
+STEP 5: Create Project Directory
+---> mkdir voting_app
+---> cd voting_app
+
+
+voting_app = project folder
+
+You must stay inside this folder for docker-compose to work
+
+STEP 6: Create Docker Compose YAML file
+
+Inside voting_app, create a file:
+
+--->  nano docker-compose.yml
+
+
+Paste this content:
+===================================================================
+version: "3.8"
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: voting_db
+      MYSQL_USER: voter
+      MYSQL_PASSWORD: voterpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  web:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    volumes:
+      - ./html:/usr/share/nginx/html
+
+volumes:
+  db_data:
+========================================================================
+
+Save and exit: CTRL+O → Enter → CTRL+X
+
+STEP 7: Add HTML Frontend
+
+Create folder inside voting_app:
+
+=====>mkdir html
+
+
+Create a simple HTML file:
+----> nano html/index.html
+
+
+Paste:
+=============================
+<h1>Voting App</h1>
+============================
+
+Save & exit.
+
+STEP 8: Run Docker Compose
+---> docker-compose up -d
+
+
+-d = detached mode (runs in background)
+
+Check running containers:
+
+---> docker ps
+
+
+You should see 2 containers: db and web.
+
+STEP 9: Access App in Browser
+
+Go to browser
+
+Open: http://<EC2-PUBLIC-IP>
+
+You should see: Voting App page
+
+STEP 10: Optional — Docker Stack in Swarm Mode
+
+If you have more than 1 EC2:
+
+Initialize swarm on manager:
+
+docker swarm init --advertise-addr <MASTER-PRIVATE-IP>
+
+
+Deploy stack:
+
+docker stack deploy -c docker-compose.yml voting_app_stack
+
+
+Check stack:
+
+docker stack services voting_app_stack
+
+
+Scale web service:
+
+docker service scale voting_app_stack_web=3
+
+STEP 11: Stop & Remove
+
+Docker Compose:
+
+docker-compose down
+
+
+Docker Stack:
+
+docker stack rm voting_app_stack
+
+STEP 12: Security Group Recap
+
+Ports 22, 80, 443 → Public access
+
+Ports 2377, 7946, 4789 → Internal swarm communication (VPC CIDR or same SG)
