@@ -1,0 +1,165 @@
+#Containerizing applications with Docker and Docker Compose
+
+
+
+STEP 1 — Launch AWS EC2 Instance
+
+Login to AWS
+
+Go to EC2
+
+Click Launch Instance
+
+Choose Ubuntu 22.04
+
+Instance type: t2.micro
+
+Key pair: Select/Create
+
+Allow port 22, 80
+
+Launch instance
+
+🟦 STEP 2 — Connect to EC2
+
+From your system:
+
+ssh -i yourkey.pem ubuntu@<EC2-PUBLIC-IP>
+
+🟦 STEP 3 — Install Docker
+
+Run:
+
+----> sudo apt update
+----> sudo apt install docker.io -y
+----> sudo systemctl enable docker
+---->  sudo systemctl start docker
+
+
+Check Docker:
+
+------> docker --version
+
+🟦 STEP 4 — Install Docker Compose
+---->  sudo apt install docker-compose -y
+
+
+Check:
+
+---->  docker-compose --version
+
+🟦 STEP 5 — Create Project Folder
+---->   mkdir docker-flask-app
+---->   cd docker-flask-app
+
+🟦 STEP 6 — Create Application File
+
+Create app.py
+
+---->  nano app.py
+
+
+Paste:
+-----------------------------------------------------------
+from flask import Flask
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Hello from Docker Container!"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0")
+--------------------------------------------------------
+
+Save → CTRL + S → CTRL + X
+
+🟦 STEP 7 — Create Requirements File
+------>  nano requirements.txt
+
+
+Add:
+
+flask
+
+
+Save + exit.
+
+🟦 STEP 8 — Create Dockerfile
+---->  nano Dockerfile
+
+
+Paste:
+---------------------------------------------------------
+FROM python:3.9
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install -r requirements.txt
+
+COPY . .
+
+CMD ["python", "app.py"]
+----------------------------------------------------------------------
+
+Save + exit.
+
+🟦 STEP 9 — Build Docker Image
+---->   sudo docker build -t flask-app .
+
+🟦 STEP 10 — Run Docker Container
+---->  sudo docker run -d -p 5000:5000 flask-app
+
+
+Check:
+
+---->  docker ps
+
+
+Now open browser:
+
+---->----> http://EC2-PUBLIC-IP:5000
+
+
+You will see:
+
+Hello from Docker Container!
+
+🟦 STEP 11 — Now Use Docker Compose
+
+We will run the same app using Docker Compose.
+
+Create file:
+
+----> nano docker-compose.yml
+
+
+Add:
+-----------------------------------
+version: "3"
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+-----------------------------------------
+
+Save.
+
+🟦 STEP 12 — Stop old container
+-----> docker stop $(docker ps -aq)
+
+🟦 STEP 13 — Run Docker Compose
+----> sudo docker-compose up --build -d
+
+
+Check:
+
+----> docker-compose ps
+
+
+Open browser again:
+
+http://EC2-PUBLIC-IP:5000
