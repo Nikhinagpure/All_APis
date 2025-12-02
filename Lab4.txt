@@ -1,0 +1,96 @@
+Setup the Docker swarm installation (master slavearchitecture)
+
+STEP 1 — Create EC2 Instances
+Create 2 Ubuntu EC2 instances
+
+OS: Ubuntu 22.04 LTS
+
+Type: t2.micro
+
+Region: same region
+
+Name:
+
+EC2-Manager
+
+EC2-Worker
+
+SG - all traffic
+
+🟧 STEP 3 — Login to Manager Node
+
+Open terminal and connect:
+
+ssh -i your-key.pem ubuntu@<manager-public-ip>
+
+🟨 STEP 4 — Update System (Both Instances)
+
+Run on BOTH Manager & Worker:
+
+---> sudo apt update -y
+---> sudo apt upgrade -y
+
+🟫 STEP 5 — Install Docker (Both Machines)
+
+Run:
+
+ ---> sudo apt install docker.io -y
+---> sudo systemctl enable docker
+ --->  sudo systemctl start docker
+ ---> sudo usermod -aG docker $USER
+
+
+Logout & login again.
+
+🟦 STEP 6 — Initialize Docker Swarm on Manager
+
+First, get manager’s private IP:
+
+------->hostname -I
+
+
+Example: 172.31.17.9
+
+Now run:
+
+------> docker swarm init --advertise-addr <private-ip>
+
+
+Example:
+
+docker swarm init --advertise-addr 172.31.17.9
+
+
+You will get output like:
+
+docker swarm join --token SWMTKN-1-xxxxx 172.31.17.9:2377
+
+
+Copy this command — it is for the worker.
+
+🟩 STEP 7 — Join Worker Node to Swarm
+
+SSH into worker node:
+
+ssh -i your-key.pem ubuntu@<worker-public-ip>
+
+
+Run the join command you got earlier:
+
+---> docker swarm join --token SWMTKN-1-xxxxx 172.31.17.9:2377
+
+
+If ports and SG are correct, the worker will join.
+
+🟧 STEP 8 — Verify Cluster (Run on Manager Node)
+docker node ls
+
+
+You should see:
+
+ID              HOSTNAME      STATUS   AVAILABILITY   MANAGER STATUS
+xyz             manager        Ready    Active         Leader
+abc             worker         Ready    Active
+
+
+This means your master–slave cluster is READY.
